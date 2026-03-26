@@ -11,9 +11,9 @@ export const register = async (req: Request, res: Response) => {
     const require = registerSchema.safeParse(req.body);
 
     if (!require.success) {
-      console.error(require.error.issues)
+      console.error(require.error.issues);
       return res.status(400).json({
-        error: require.error.issues.map(issue => issue.message).join(', '),
+        error: require.error.issues.map((issue) => issue.message).join(", "),
       });
     }
 
@@ -39,14 +39,14 @@ export const login = async (req: Request, res: Response) => {
     const require = loginSchema.safeParse(req.body);
 
     if (!require.success) {
-      console.error(require.error.issues)
+      console.error(require.error.issues);
       return res.status(400).json({
-        error: require.error.issues.map(issue => issue.message).join(', '),
+        error: require.error.issues.map((issue) => issue.message).join(", "),
       });
     }
 
     const validatedData = require.data;
-    
+
     const user = await userService.findUserByEmail(validatedData.email);
 
     if (
@@ -59,7 +59,14 @@ export const login = async (req: Request, res: Response) => {
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: "1d" });
+    const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: "7d" });
+
+    res.cookie("token", token, {
+      httpOnly: true, // JS can't access it (XSS protection)
+      secure: process.env.NODE_ENV === "production", // HTTPS only in prod
+      sameSite: "strict", // CSRF protection
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in ms
+    });
 
     const { password, ...userWithoutPassword } = user;
     res.json({ user: userWithoutPassword, token });
