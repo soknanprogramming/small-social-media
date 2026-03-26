@@ -15,7 +15,7 @@ const jwtSlice = createSlice({
     setToken: (state, action) => {
       state.token = action.payload;
       if (action.payload) {
-        sessionStorage.setItem('authToken', action.payload);
+        localStorage.setItem('authToken', action.payload);
       } else {
         sessionStorage.removeItem('authToken');
       }
@@ -23,7 +23,7 @@ const jwtSlice = createSlice({
 
     deleteToken: (state) => {
       state.token = null;
-      sessionStorage.removeItem('authToken');
+      localStorage.removeItem('authToken');
     }
   }
 });
