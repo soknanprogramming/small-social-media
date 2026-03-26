@@ -1,9 +1,12 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { useAppSelector } from "../app/hooks";
+import { useAppSelector, useAppDispatch } from "../app/hooks";
+import { deleteToken } from "../features/auth/jwtSlice";
+import type { RootState } from "../app/store";
 
 const SideBar: React.FC = () => {
-  const token = useAppSelector((state) => state.jwt.token);
+  const token = useAppSelector((state: RootState) => state.jwt.token);
+  const dispatch = useAppDispatch();
 
   return (
     <div className="w-30 bg-amber-200 h-screen sticky left-0 top-0 mr-2 p-2">
@@ -26,7 +29,7 @@ const SideBar: React.FC = () => {
               </>
             ) : (
                 <li className="hover:text-blue-600">
-                    <Link to="/logout">Logout</Link>
+                    <button onClick={() => dispatch(deleteToken())}>Logout</button>
                 </li>
             )}
 
