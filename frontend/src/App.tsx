@@ -4,6 +4,7 @@ import Home from "./features/page/Home";
 import About from "./features/page/About";
 import Register from "./features/auth/Register";
 import Login from "./features/auth/Login";
+import Profile from "./features/profile/Profile";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/profile" element={<Profile />} />
         </Routes>
       </div>
     </BrowserRouter>

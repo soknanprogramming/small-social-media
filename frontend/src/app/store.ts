@@ -1,9 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
 import jwtReducer from '../features/auth/jwtSlice';
+import profileReducer from '../features/profile/profileSlice';
 
 export const store = configureStore({
   reducer: {
-    jwt: jwtReducer
+    jwt: jwtReducer,
+    profile: profileReducer
   }
 })
 

@@ -12,6 +12,13 @@ const SideBar: React.FC = () => {
     <div className="w-30 bg-amber-200 h-screen sticky left-0 top-0 mr-2 p-2">
       <nav>
         <ul>
+            {
+                token && (
+                    <li className="hover:text-blue-600">
+                        <Link to="/profile">Profile</Link>
+                    </li>
+                )
+            }
           <li className="hover:text-blue-600">
             <Link to="/">Home</Link>
           </li>
