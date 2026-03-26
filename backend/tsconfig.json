@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "CommonJS",
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "esModuleInterop": true, // Enables interoperability between CommonJS and ES Modules (allows default imports like `import express from 'express'`)
+    "forceConsistentCasingInFileNames": true, // Ensures imports match the exact case of the file system (prevents bugs across different OSs)
+    "strict": true, // Enables all strict type-checking options (like noImplicitAny, strictNullChecks, etc.)
+    "skipLibCheck": true, // Skips type checking of all declaration files (*.d.ts) to speed up compilation time
+    "sourceMap": true, // Generates .js.map files so debuggers can map the compiled JS back to the original TS code
+    "declaration": true // Generates corresponding .d.ts files alongside the compiled JavaScript
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "**/*.test.ts"]
+}
