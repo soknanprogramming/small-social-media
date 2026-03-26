@@ -1,8 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "../app/hooks";
-import { deleteToken } from "../features/auth/jwtSlice";
+// import { deleteToken } from "../features/auth/jwtSlice";
 import type { RootState } from "../app/store";
+import { setLoggedIn } from "../features/auth/loginSlice";
 
 const SideBar: React.FC = () => {
   // const token = useAppSelector((state: RootState) => state.jwt.token);
@@ -25,9 +26,9 @@ const SideBar: React.FC = () => {
           <li className="hover:text-blue-600">
             <Link to="/">Home</Link>
           </li>
-          <li className="hover:text-blue-600">
+          {/* <li className="hover:text-blue-600">
             <Link to="/about">About</Link>
-          </li>
+          </li> */}
             {!isLoggedIn ? (
               <>
                 <li className="hover:text-blue-600">
@@ -39,7 +40,7 @@ const SideBar: React.FC = () => {
               </>
             ) : (
                 <li className="hover:text-blue-600">
-                    <button onClick={() => dispatch(deleteToken())}>Logout</button>
+                    <button onClick={() => dispatch(setLoggedIn(false))}>Logout</button>
                 </li>
             )}
 
