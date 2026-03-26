@@ -18,6 +18,7 @@ const Register: React.FC = () => {
   });
   const [loading, setLoading] = useState<boolean>(false);
   const [apiError, setApiError] = useState<string>("");
+  const [successMessage, setSuccessMessage] = useState<string>("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -40,6 +41,7 @@ const Register: React.FC = () => {
 
     try {
       const { data } = await axios.post<RegisterResponse>("/api/users/register", payload);
+      setSuccessMessage("Registration successful!");
       console.log(data);
     } catch (err) {
       if (err instanceof AxiosError) {
@@ -54,10 +56,10 @@ const Register: React.FC = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
+    <div className="flex justify-center min-h-screen">
       <form onSubmit={handleSubmit} className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
         {apiError && <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">{apiError}</div>}
-        
+        {successMessage && <div className="mb-4 p-3 bg-green-100 text-green-700 rounded">{successMessage}</div>}
         <div className="mb-4">
           <label htmlFor="name" className="block text-gray-700 font-semibold mb-2">Name</label>
           <input

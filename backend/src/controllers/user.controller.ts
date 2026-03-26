@@ -36,7 +36,17 @@ export const register = async (req: Request, res: Response) => {
 
 export const login = async (req: Request, res: Response) => {
   try {
-    const validatedData = loginSchema.parse(req.body);
+    const require = loginSchema.safeParse(req.body);
+
+    if (!require.success) {
+      console.error(require.error.issues)
+      return res.status(400).json({
+        error: require.error.issues.map(issue => issue.message).join(', '),
+      });
+    }
+
+    const validatedData = require.data;
+    
     const user = await userService.findUserByEmail(validatedData.email);
 
     if (
