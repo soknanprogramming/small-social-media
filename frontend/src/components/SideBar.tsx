@@ -5,15 +5,18 @@ import { deleteToken } from "../features/auth/jwtSlice";
 import type { RootState } from "../app/store";
 
 const SideBar: React.FC = () => {
-  const token = useAppSelector((state: RootState) => state.jwt.token);
+  // const token = useAppSelector((state: RootState) => state.jwt.token);
+  const isLoggedIn = useAppSelector((state: RootState) => state.login.isLoggedIn);
   const dispatch = useAppDispatch();
+
+  console.log("Sidebar - isLoggedIn:", isLoggedIn);
 
   return (
     <div className="w-30 bg-amber-200 h-screen sticky left-0 top-0 mr-2 p-2">
       <nav>
         <ul>
             {
-                token && (
+                isLoggedIn && (
                     <li className="hover:text-blue-600">
                         <Link to="/profile">Profile</Link>
                     </li>
@@ -25,7 +28,7 @@ const SideBar: React.FC = () => {
           <li className="hover:text-blue-600">
             <Link to="/about">About</Link>
           </li>
-            {!token ? (
+            {!isLoggedIn ? (
               <>
                 <li className="hover:text-blue-600">
                   <Link to="/register">Register</Link>

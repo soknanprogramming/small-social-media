@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { setToken } from "./jwtSlice";
+// import { setToken } from "./jwtSlice";
+import { setLoggedIn } from "./loginSlice";
 import axios from "../../libs/axios";
 import { AxiosError } from "axios";
 import type { LoginResponse } from "./types/login";
 import type { RootState } from "../../app/store";
+import { useNavigate } from "react-router-dom";
 
 interface FormDate {
   email: string;
@@ -20,14 +22,18 @@ const Login: React.FC = () => {
   const [apiError, setApiError] = useState<string>("");
   const [successMessage, setSuccessMessage] = useState<string>("");
   const dispatch = useAppDispatch();
-  const token = useAppSelector((state: RootState) => state.jwt.token);
+  const isLoggedIn = useAppSelector((state: RootState) => state.login.isLoggedIn);
+  // const token = useAppSelector((state: RootState) => state.jwt.token);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if (token) {
+    if (isLoggedIn) {
+      console.log("User is logged in: ", isLoggedIn);
       // Redirect to dashboard or home page
-      window.location.href = "/"; // Change this to your desired route
+      // window.location.href = "/"; // Change this to your desired route
+      navigate("/");
     }
-  }, [token]);
+  }, [isLoggedIn, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,7 +51,9 @@ const Login: React.FC = () => {
         payload,
       );
       setSuccessMessage("Login successful!");
-      dispatch(setToken(data.token));
+      console.log("Login successful!");
+      dispatch(setLoggedIn(true));
+      // dispatch(setToken(data.token));
       console.log(data);
     } catch (err) {
       if (err instanceof AxiosError) {

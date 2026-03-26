@@ -1,17 +1,19 @@
 import axios from "axios";
 import { store } from "../app/store";
-import { deleteToken } from "../features/auth/jwtSlice";
+// import { deleteToken } from "../features/auth/jwtSlice";
+import { setLoggedIn } from "../features/auth/loginSlice";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
+  withCredentials: true
 });
 
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("authToken");
+  // const token = localStorage.getItem("authToken");
 
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
+  // if (token) {
+  //   config.headers.Authorization = `Bearer ${token}`;
+  // }
 
   return config;
 });
@@ -23,7 +25,8 @@ api.interceptors.response.use(
 
     if (status === 401) {
       // token invalid / expired
-      store.dispatch(deleteToken());
+      // store.dispatch(deleteToken());
+      store.dispatch(setLoggedIn(false));
 
       // redirect to login
       window.location.href = "/login";

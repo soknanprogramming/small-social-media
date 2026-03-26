@@ -5,7 +5,12 @@ import userRoutes from './routes/user.routes';
 
 const app = express();
 
-app.use(cors()); // Enables Cross-Origin Resource Sharing (allows requests from frontend domains/ports)
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true
+  })
+);
 app.use(express.json()); // Parses incoming JSON payloads in the request body (populates req.body)
 app.use(cookieParser()); // Parses incoming Cookie headers (populates req.cookies)
 
