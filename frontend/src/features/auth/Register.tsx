@@ -3,6 +3,7 @@ import { useState } from "react";
 import axios from "../../libs/axios";
 import { AxiosError } from "axios";
 import type { RegisterResponse, RegisterRequest } from "./types/register";
+import { useNavigate } from "react-router-dom";
 
 interface FormData {
   email: string;
@@ -19,6 +20,7 @@ const Register: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [apiError, setApiError] = useState<string>("");
   const [successMessage, setSuccessMessage] = useState<string>("");
+  const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -42,6 +44,8 @@ const Register: React.FC = () => {
     try {
       const { data } = await axios.post<RegisterResponse>("/api/users/register", payload);
       setSuccessMessage("Registration successful!");
+      navigate("/login");
+      console.log("Registration successful!");
       console.log(data);
     } catch (err) {
       if (err instanceof AxiosError) {
