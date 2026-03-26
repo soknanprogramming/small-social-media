@@ -5,7 +5,7 @@ interface jwtState {
 }
 
 const initialState: jwtState = {
-  token: sessionStorage.getItem('authToken') ?? null
+  token: localStorage.getItem('authToken') ?? null
 };
 
 const jwtSlice = createSlice({
@@ -17,7 +17,7 @@ const jwtSlice = createSlice({
       if (action.payload) {
         localStorage.setItem('authToken', action.payload);
       } else {
-        sessionStorage.removeItem('authToken');
+        localStorage.removeItem('authToken');
       }
     },
 

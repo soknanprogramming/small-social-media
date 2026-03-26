@@ -3,6 +3,7 @@ import { useAppSelector, useAppDispatch } from "../../app/hooks";
 import type { RootState } from "../../app/store";
 import { setProfile } from "./profileSlice";
 import api from "../../libs/axios";
+import type { ProfileResponse } from "./types/profile";
 
 const Profile: React.FC = () => {
   const profile = useAppSelector((state: RootState) => state.profile);
@@ -11,7 +12,7 @@ const Profile: React.FC = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const { data } = await api.get("/api/users/profile");
+        const { data } = await api.get<ProfileResponse>("/api/users/profile");
         dispatch(setProfile(data));
         console.log(data);
       } catch (err) {

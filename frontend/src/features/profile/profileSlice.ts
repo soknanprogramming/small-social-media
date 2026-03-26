@@ -13,7 +13,7 @@ const profileSlice = createSlice({
     name: "profile",
     initialState,
     reducers: {
-        setProfile: (state, action) => {
+        setProfile: (_, action: { payload: ProfileResponse }) => {
             return action.payload;
         }
     }
