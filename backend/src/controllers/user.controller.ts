@@ -75,6 +75,15 @@ export const login = async (req: Request, res: Response) => {
   }
 };
 
+export const logout = (req: Request, res: Response) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+  });
+  res.json({ message: "Logged out successfully" });
+};
+
 export const getProfile = async (req: any, res: Response) => {
   const user = await userService.findUserById(req.userId);
   if (!user) {
