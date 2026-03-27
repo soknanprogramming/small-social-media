@@ -3,4 +3,8 @@ export interface PostResponse {
   title: string;
   content: string | null;
   imageUrl: string | null;
+  isLiked?: boolean;
+  _count: {
+    likes: number;
+  };
 }

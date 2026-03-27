@@ -32,6 +32,7 @@ const postSlice = createSlice({
   name: "posts",
   initialState,
   reducers: {},
+  // extraReducers to handle the async thunk states
   extraReducers: (builder) => {
     builder
       .addCase(fetchPosts.pending, (state) => {
