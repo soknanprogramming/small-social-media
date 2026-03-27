@@ -50,3 +50,15 @@ export const createPost = async (req: AuthRequest, res: Response) => {
   }
 
 };
+
+export const getPostsByPage = async (req: Request, res: Response) => {
+  const page = parseInt(req.query.page as string) || 1;
+  const limit = parseInt(req.query.limit as string) || 10;
+  try {
+    const posts = await postService.getPostsByPage(page, limit);
+    return res.status(200).json(posts);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
