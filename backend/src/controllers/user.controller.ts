@@ -1,7 +1,14 @@
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import * as userService from "../services/user.service";
-import { loginSchema, registerSchema } from "../validations/user.validation";
+import {
+  loginSchema,
+  registerSchema,
+  updateProfileSchema,
+} from "../validations/user.validation";
+import { UserProfileResponseDto } from "../dto/user.dto";
+import { AuthRequest } from "../types/auth.types";
+import { uploadToCloudinary } from "../utils/uploadToCloudinary";
 
 const JWT_SECRET = process.env.JWT_SECRET || "secret";
 
@@ -69,7 +76,7 @@ export const login = async (req: Request, res: Response) => {
     });
 
     const { password, ...userWithoutPassword } = user;
-    res.json({ user: userWithoutPassword, token });
+    return res.json({ user: userWithoutPassword, token });
   } catch (error: any) {
     res.status(400).json({ error: error.errors || error.message });
   }
@@ -84,11 +91,68 @@ export const logout = (req: Request, res: Response) => {
   res.json({ message: "Logged out successfully" });
 };
 
-export const getProfile = async (req: any, res: Response) => {
+export const getProfile = async (req: AuthRequest, res: Response) => {
+  if (!req.userId) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
   const user = await userService.findUserById(req.userId);
   if (!user) {
     return res.status(404).json({ error: "User not found" });
   }
-  const { password, ...userWithoutPassword } = user;
-  res.json(userWithoutPassword);
+
+  res.status(200).json(new UserProfileResponseDto(user));
+};
+
+// Middleware:
+// - auth middleware to get userId from token and set it in req.userId
+// - multer for file upload
+// Requirements:
+// - zod schema for name, bio (optional)
+// - multipart/form-data: avatar (optional)
+export const updateProfile = async (req: AuthRequest, res: Response) => {
+  const validateDate = updateProfileSchema.safeParse(req.body);
+
+  if (!validateDate.success) {
+    console.error(validateDate.error.issues);
+    return res.status(400).json({
+      error: validateDate.error.issues.map((issue) => issue.message).join(", "),
+    });
+  }
+
+  // if (!req.userId) {
+  //   return res.status(401).json({ error: "Unauthorized" });
+  // }
+
+  const { name, bio } = validateDate.data;
+  const user = await userService.findUserById(req.userId!); // ! is used to assert that userId is not undefined
+
+  if (!user) {
+    return res.status(404).json({ error: "User not found" });
+  }
+
+  try {
+    if (req.file) {
+      const { buffer } = req.file;
+      const folder = "avatars"; // You can change this to any folder you want in Cloudinary
+      const { url, public_id } = await uploadToCloudinary(buffer, folder);
+      const updatedUser = await userService.updateUserProfile(
+        req.userId!,
+        name,
+        bio,
+        url,
+        public_id,
+      );
+      return res.status(200).json(new UserProfileResponseDto(updatedUser));
+    } else {
+      const updatedUser = await userService.updateUserProfile(
+        req.userId!,
+        name,
+        bio,
+      );
+      return res.status(200).json(new UserProfileResponseDto(updatedUser));
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
 };

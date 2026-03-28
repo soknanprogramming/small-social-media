@@ -27,3 +27,15 @@ export const findUserById = async (id: string) => {
 export const comparePassword = async (password: string, hash: string) => {
   return bcrypt.compare(password, hash);
 };
+
+export const updateUserProfile = async (userId: string, name?: string, bio?: string, avatarUrl?: string, public_id?: string) => {
+  return prisma.user.update({
+    where: { id: userId },
+    data: {
+      name,
+      bio,
+      avatarUrl,
+      public_id,
+    },
+  });
+}

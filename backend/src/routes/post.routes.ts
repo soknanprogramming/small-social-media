@@ -8,6 +8,6 @@ const router = Router();
 // /api/posts/
 // GET /api/posts/?page=1&limit=10
 router.get("/", postController.getPostsByPage);
-router.post("/", authMiddleware, uploadSingle, postController.createPost);
+router.post("/", authMiddleware, uploadSingle("photo"), postController.createPost);
 
 export default router;
