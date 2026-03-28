@@ -1,3 +1,6 @@
+this my axios config
+
+``` ts
 // frontend/src/libs/axios.ts
 
 import axios from "axios";
@@ -10,12 +13,6 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-  // const token = localStorage.getItem("authToken");
-
-  // if (token) {
-  //   config.headers.Authorization = `Bearer ${token}`;
-  // }
-
   return config;
 });
 
@@ -25,11 +22,7 @@ api.interceptors.response.use(
     const status = error.response?.status;
 
     if (status === 401) {
-      // token invalid / expired
-      // store.dispatch(deleteToken());
       store.dispatch(setLoggedIn(false));
-
-      // redirect to login
       window.location.href = "/login";
     }
 
@@ -38,3 +31,9 @@ api.interceptors.response.use(
 );
 
 export default api;
+
+
+```
+
+
+

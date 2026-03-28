@@ -104,7 +104,7 @@ const Login: React.FC = () => {
 
           {/* Header — mirrors sidebar brand style */}
           <div className="mb-7">
-            <span className="text-base font-semibold text-gray-900">My App</span>
+            <span className="text-base font-semibold text-gray-900">Small Social</span>
             <h1 className="text-sm text-gray-500 mt-0.5">Sign in to your account</h1>
           </div>
 

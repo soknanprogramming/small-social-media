@@ -4,6 +4,7 @@ export interface PostResponse {
   content: string | null;
   imageUrl: string | null;
   isLiked?: boolean;
+  createdAt: string;
   _count: {
     likes: number;
   };

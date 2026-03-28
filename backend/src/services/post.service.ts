@@ -33,6 +33,7 @@ export const getPostsByPage = async (page: number, limit: number) => {
       title: true,
       content: true,
       imageUrl: true,
+      createdAt: true,
       _count: {
         select: {
           likes: true, // Returns { likes: number }

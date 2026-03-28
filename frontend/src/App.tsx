@@ -5,6 +5,8 @@ import About from "./features/page/About";
 import Register from "./features/auth/Register";
 import Login from "./features/auth/Login";
 import Profile from "./features/profile/Profile";
+import PostPage from "./features/posts/PostPage";
+import MyPostPage from "./features/posts/MyPostPage";
 
 function App() {
   return (
@@ -18,6 +20,8 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/posts" element={<PostPage />} />
+            <Route path="/my_posts" element={<MyPostPage />} />
           </Routes>
         </div>
       </div>
