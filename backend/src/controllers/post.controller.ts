@@ -172,3 +172,27 @@ export const updatePost = async (req: AuthRequest, res: Response) => {
   }
 };
 
+// Example: DELETE /api/posts/:id - Delete a post (requires auth and ownership)
+export const deletePost = async (req: AuthRequest, res: Response) => {
+  const { id } = req.params as { id: string };
+
+  try {
+    const result = await postService.deletePost(id, req.userId!);
+
+    if (!result) {
+      return res.status(404).json({ error: "Post not found" });
+    }
+
+    if ("unauthorized" in result && result.unauthorized) {
+      return res.status(403).json({
+        error: "You don't have permission to delete this post",
+      });
+    }
+
+    return res.status(200).json(result);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+

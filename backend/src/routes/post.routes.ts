@@ -15,6 +15,7 @@ router.get("/:id", optionalAuthMiddleware, postController.getPostById);
 router.post("/", authMiddleware, uploadSingle("photo"), postController.createPost);
 // PUT /api/posts/:id - Update a post (requires auth and ownership, supports image upload)
 router.put("/:id", authMiddleware, uploadSingle("photo"), postController.updatePost);
-
+// DELETE /api/posts/:id - Delete a post (requires auth and ownership, only post owner can delete)
+router.delete("/:id", authMiddleware, postController.deletePost);
 
 export default router;

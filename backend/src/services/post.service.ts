@@ -180,3 +180,48 @@ export const updatePost = async (
 
   return updatedPost;
 };
+
+export const deletePost = async (
+  postId: string,
+  userId: string,
+) => {
+  // First, check if post exists and belongs to user
+  const post = await prisma.post.findUnique({
+    where: {
+      id: postId,
+    },
+    select: {
+      id: true,
+      authorId: true,
+      public_id: true,
+    },
+  });
+
+  if (!post) {
+    return null;
+  }
+
+  // Check ownership
+  if (post.authorId !== userId) {
+    return { unauthorized: true };
+  }
+
+  // Delete image from Cloudinary if it exists
+  if (post.public_id) {
+    try {
+      await deleteFromCloudinary(post.public_id);
+    } catch (error) {
+      console.error("Failed to delete image from Cloudinary:", error);
+      // Continue with deletion even if Cloudinary deletion fails
+    }
+  }
+
+  // Delete the post (cascade delete handles likes)
+  await prisma.post.delete({
+    where: {
+      id: postId,
+    },
+  });
+
+  return { success: true, message: "Post deleted successfully" };
+};
