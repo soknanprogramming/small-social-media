@@ -5,8 +5,8 @@ import * as postController from "../controllers/post.controller";
 
 const router = Router();
 
-// GET /api/posts/?page=1&limit=10
-router.get("/", postController.getPostsByPage);
+// GET /api/posts/?page=1&limit=10 - Optional auth to track user likes
+router.get("/", optionalAuthMiddleware, postController.getPostsByPage);
 // GET /api/posts/own?page=1&limit=10 - Get user's own posts with pagination
 router.get("/own", authMiddleware, postController.getOwnPostsByPage);
 // GET /api/posts/:id - Get a single post with optional auth (to check if user can view unpublished post)
@@ -17,5 +17,9 @@ router.post("/", authMiddleware, uploadSingle("photo"), postController.createPos
 router.put("/:id", authMiddleware, uploadSingle("photo"), postController.updatePost);
 // DELETE /api/posts/:id - Delete a post (requires auth and ownership, only post owner can delete)
 router.delete("/:id", authMiddleware, postController.deletePost);
+// POST /api/posts/:id/like - Like a post (requires auth)
+router.post("/:id/like", authMiddleware, postController.likePost);
+// DELETE /api/posts/:id/like - Unlike a post (requires auth)
+router.delete("/:id/like", authMiddleware, postController.unlikePost);
 
 export default router;

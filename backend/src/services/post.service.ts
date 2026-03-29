@@ -37,9 +37,9 @@ export const createPost = async (
   });
 };
 
-export const getPostsByPage = async (page: number, limit: number) => {
+export const getPostsByPage = async (page: number, limit: number, userId?: string) => {
   const offset = (page - 1) * limit;
-  return prisma.post.findMany({
+  const posts = await prisma.post.findMany({
     skip: offset,
     take: limit,
     where: {
@@ -63,8 +63,24 @@ export const getPostsByPage = async (page: number, limit: number) => {
           likes: true, // Returns { likes: number }
         },
       },
+      likes: userId ? {
+        where: {
+          userId: userId,
+        },
+        select: {
+          id: true,
+        },
+        take: 1,
+      } : false,
     },
   });
+
+  // Transform to include isLiked field
+  return posts.map(post => ({
+    ...post,
+    isLiked: userId ? post.likes.length > 0 : false,
+    likes: undefined,
+  }));
 };
 
 export const getOwnPostsByPage = async (
@@ -73,7 +89,7 @@ export const getOwnPostsByPage = async (
   limit: number,
 ) => {
   const offset = (page - 1) * limit;
-  return prisma.post.findMany({
+  const posts = await prisma.post.findMany({
     skip: offset,
     take: limit,
     where: {
@@ -98,11 +114,27 @@ export const getOwnPostsByPage = async (
           likes: true,
         },
       },
+      likes: {
+        where: {
+          userId: userId,
+        },
+        select: {
+          id: true,
+        },
+        take: 1,
+      },
     },
     orderBy: {
       createdAt: "desc",
     },
   });
+
+  // Transform to include isLiked field
+  return posts.map(post => ({
+    ...post,
+    isLiked: post.likes.length > 0,
+    likes: undefined,
+  }));
 };
 
 export const getPostById = async (
@@ -133,6 +165,15 @@ export const getPostById = async (
           likes: true,
         },
       },
+      likes: userId ? {
+        where: {
+          userId: userId,
+        },
+        select: {
+          id: true,
+        },
+        take: 1,
+      } : false,
     },
   });
 
@@ -148,8 +189,12 @@ export const getPostById = async (
   }
 
   // Remove authorId from response but keep author details
-  const { authorId, ...postData } = post;
-  return postData;
+  const { authorId, ...postData } = post as any;
+  return {
+    ...postData,
+    isLiked: userId ? postData.likes.length > 0 : false,
+    likes: undefined,
+  };
 };
 
 export const updatePost = async (
@@ -268,4 +313,64 @@ export const deletePost = async (
   });
 
   return { success: true, message: "Post deleted successfully" };
+};
+
+export const likePost = async (postId: string, userId: string) => {
+  // Check if post exists
+  const post = await prisma.post.findUnique({
+    where: { id: postId },
+    select: { id: true },
+  });
+
+  if (!post) {
+    return null;
+  }
+
+  // Check if user already liked this post
+  const existingLike = await prisma.like.findFirst({
+    where: {
+      postId,
+      userId,
+    },
+  });
+
+  if (existingLike) {
+    return { alreadyLiked: true };
+  }
+
+  // Create the like
+  await prisma.like.create({
+    data: {
+      postId,
+      userId,
+    },
+  });
+
+  return { success: true };
+};
+
+export const unlikePost = async (postId: string, userId: string) => {
+  // Check if post exists
+  const post = await prisma.post.findUnique({
+    where: { id: postId },
+    select: { id: true },
+  });
+
+  if (!post) {
+    return null;
+  }
+
+  // Delete the like
+  const deletedLike = await prisma.like.deleteMany({
+    where: {
+      postId,
+      userId,
+    },
+  });
+
+  if (deletedLike.count === 0) {
+    return { notLiked: true };
+  }
+
+  return { success: true };
 };

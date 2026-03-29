@@ -60,8 +60,11 @@ export const createPost = async (req: AuthRequest, res: Response) => {
 export const getPostsByPage = async (req: Request, res: Response) => {
   const page = parseInt(req.query.page as string) || 1;
   const limit = parseInt(req.query.limit as string) || 10;
+  // Try to get userId from auth header or cookies if user is logged in
+  const userId = (req as any).userId;
+  
   try {
-    const posts = await postService.getPostsByPage(page, limit);
+    const posts = await postService.getPostsByPage(page, limit, userId);
     return res.status(200).json(posts);
   } catch (error) {
     console.error(error);
@@ -164,7 +167,13 @@ export const updatePost = async (req: AuthRequest, res: Response) => {
       return res.status(500).json(result);
     }
 
-    const { authorId, public_id: _, ...postWithoutSensitive } = result;
+    const { authorId, public_id: _ } = result as any;
+    const postWithoutSensitive = Object.entries(result as any).reduce((acc, [key, value]) => {
+      if (key !== 'authorId' && key !== 'public_id') {
+        Object.assign(acc, { [key]: value });
+      }
+      return acc;
+    }, {});
     return res.status(200).json(postWithoutSensitive);
   } catch (error) {
     console.error(error);
@@ -190,6 +199,50 @@ export const deletePost = async (req: AuthRequest, res: Response) => {
     }
 
     return res.status(200).json(result);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+// Example: POST /api/posts/:id/like - Like a post (requires auth)
+export const likePost = async (req: AuthRequest, res: Response) => {
+  const { id } = req.params as { id: string };
+
+  try {
+    const result = await postService.likePost(id, req.userId!);
+
+    if (!result) {
+      return res.status(404).json({ error: "Post not found" });
+    }
+
+    if ("alreadyLiked" in result && result.alreadyLiked) {
+      return res.status(400).json({ error: "You already liked this post" });
+    }
+
+    return res.status(200).json({ success: true, message: "Post liked successfully" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+// Example: DELETE /api/posts/:id/like - Unlike a post (requires auth)
+export const unlikePost = async (req: AuthRequest, res: Response) => {
+  const { id } = req.params as { id: string };
+
+  try {
+    const result = await postService.unlikePost(id, req.userId!);
+
+    if (!result) {
+      return res.status(404).json({ error: "Post not found" });
+    }
+
+    if ("notLiked" in result && result.notLiked) {
+      return res.status(400).json({ error: "You haven't liked this post" });
+    }
+
+    return res.status(200).json({ success: true, message: "Post unliked successfully" });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Internal server error" });

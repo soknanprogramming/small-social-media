@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useAppDispatch } from "../../../app/hooks";
+import { likePost, unlikePost } from "../postSlice";
 import type { PostResponse } from "../types/post";
 import ThumbsUpIcon from "../../../components/icons/ThumbsUpIcon";
 
@@ -7,6 +9,7 @@ interface PostCardProps {
 }
 
 export default function PostCard({ post }: PostCardProps) {
+  const dispatch = useAppDispatch();
   const [liked, setLiked] = useState(post.isLiked);
   const [likeCount, setLikeCount] = useState(post._count.likes);
   const [loading, setLoading] = useState(false);
@@ -20,14 +23,16 @@ export default function PostCard({ post }: PostCardProps) {
 
     setLoading(true);
     try {
-      // TODO: replace with your actual API call
-      // await api.post(`/posts/${post.id}/like`)   <- if not liked
-      // await api.delete(`/posts/${post.id}/like`) <- if already liked
-      await new Promise((res) => setTimeout(res, 500)); // placeholder
-    } catch {
+      if (liked) {
+        await dispatch(unlikePost(post.id)).unwrap();
+      } else {
+        await dispatch(likePost(post.id)).unwrap();
+      }
+    } catch (error) {
       // Revert on failure
       setLiked((prev) => !prev);
       setLikeCount((prev) => (liked ? prev + 1 : prev - 1));
+      console.error("Failed to update like status:", error);
     } finally {
       setLoading(false);
     }
