@@ -38,8 +38,8 @@ export const createPost = async (req: AuthRequest, res: Response) => {
         url,
         public_id,
       );
-      const { authorId, public_id: _, ...postWithoutAuthor } = post;
-      return res.status(201).json(postWithoutAuthor);
+      const { authorId, ...postWithoutAuthorId } = post;
+      return res.status(201).json(postWithoutAuthorId);
     } else {
       const post = await postService.createPost(
         req.userId!,
@@ -47,8 +47,8 @@ export const createPost = async (req: AuthRequest, res: Response) => {
         content,
         published,
       );
-      const { authorId, ...postWithoutAuthor } = post;
-      return res.status(201).json(postWithoutAuthor);
+      const { authorId, ...postWithoutAuthorId } = post;
+      return res.status(201).json(postWithoutAuthorId);
     }
   } catch (error) {
     console.error(error);

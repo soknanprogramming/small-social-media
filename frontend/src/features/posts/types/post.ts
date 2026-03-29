@@ -1,3 +1,9 @@
+export interface Author {
+  id: string;
+  name: string | null;
+  avatarUrl: string | null;
+}
+
 export interface PostResponse {
   id: string;
   title: string;
@@ -5,6 +11,7 @@ export interface PostResponse {
   imageUrl: string | null;
   isLiked?: boolean;
   createdAt: string;
+  author: Author;
   _count: {
     likes: number;
   };

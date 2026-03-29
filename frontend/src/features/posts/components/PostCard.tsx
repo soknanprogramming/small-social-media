@@ -35,8 +35,35 @@ export default function PostCard({ post }: PostCardProps) {
 
   return (
     <div className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
+      {/* Author Info */}
+      <div className="px-6 pt-4 pb-3 flex items-center gap-3">
+        {post.author.avatarUrl ? (
+          <img
+            src={post.author.avatarUrl}
+            alt={post.author.name || "Author"}
+            className="w-10 h-10 rounded-full object-cover"
+          />
+        ) : (
+          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-semibold text-sm">
+            {(post.author.name?.[0] || "?").toUpperCase()}
+          </div>
+        )}
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-semibold text-gray-900 truncate">
+            {post.author.name || "Anonymous"}
+          </p>
+          <p className="text-xs text-gray-400">
+            {new Date(post.createdAt).toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+            })}
+          </p>
+        </div>
+      </div>
+
       {/* Title */}
-      <div className="px-6 pt-5 pb-3">
+      <div className="px-6 pb-3">
         <h2 className="text-xl font-semibold text-gray-900 line-clamp-1">
           {post.title}
         </h2>
@@ -64,13 +91,12 @@ export default function PostCard({ post }: PostCardProps) {
         </p>
       </div>
 
-      {/* Like + Date */}
-      <div className="px-6 pb-5 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <button
-            onClick={handleLike}
-            disabled={loading}
-            className={`
+      {/* Like Count */}
+      <div className="px-6 pb-5 flex items-center gap-2">
+        <button
+          onClick={handleLike}
+          disabled={loading}
+          className={`
           p-2 rounded-full transition-all duration-200
           ${
             liked
@@ -79,21 +105,12 @@ export default function PostCard({ post }: PostCardProps) {
           }
           disabled:opacity-50 disabled:cursor-not-allowed
         `}
-            aria-label={liked ? "Unlike" : "Like"}
-          >
-            <ThumbsUpIcon className="w-5 h-5" filled={liked} />
-          </button>
-          <span className="text-xs text-gray-400 tabular-nums">
-            {likeCount}
-          </span>
-        </div>
-
-        <span className="text-xs text-gray-300">
-          Upload at {new Date(post.createdAt).toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-          })}
+          aria-label={liked ? "Unlike" : "Like"}
+        >
+          <ThumbsUpIcon className="w-5 h-5" filled={liked} />
+        </button>
+        <span className="text-xs text-gray-400 tabular-nums">
+          {likeCount} {likeCount === 1 ? "like" : "likes"}
         </span>
       </div>
     </div>

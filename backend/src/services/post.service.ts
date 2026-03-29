@@ -18,6 +18,22 @@ export const createPost = async (
       public_id,
       authorId: userId,
     },
+    select: {
+      id: true,
+      title: true,
+      content: true,
+      imageUrl: true,
+      published: true,
+      createdAt: true,
+      authorId: true,
+      author: {
+        select: {
+          id: true,
+          name: true,
+          avatarUrl: true,
+        },
+      },
+    },
   });
 };
 
@@ -35,6 +51,13 @@ export const getPostsByPage = async (page: number, limit: number) => {
       content: true,
       imageUrl: true,
       createdAt: true,
+      author: {
+        select: {
+          id: true,
+          name: true,
+          avatarUrl: true,
+        },
+      },
       _count: {
         select: {
           likes: true, // Returns { likes: number }
@@ -63,6 +86,13 @@ export const getOwnPostsByPage = async (
       imageUrl: true,
       published: true,
       createdAt: true,
+      author: {
+        select: {
+          id: true,
+          name: true,
+          avatarUrl: true,
+        },
+      },
       _count: {
         select: {
           likes: true,
@@ -91,6 +121,13 @@ export const getPostById = async (
       published: true,
       createdAt: true,
       authorId: true,
+      author: {
+        select: {
+          id: true,
+          name: true,
+          avatarUrl: true,
+        },
+      },
       _count: {
         select: {
           likes: true,
@@ -110,7 +147,7 @@ export const getPostById = async (
     }
   }
 
-  // Remove authorId from response
+  // Remove authorId from response but keep author details
   const { authorId, ...postData } = post;
   return postData;
 };
@@ -174,6 +211,13 @@ export const updatePost = async (
       createdAt: true,
       updatedAt: true,
       authorId: true,
+      author: {
+        select: {
+          id: true,
+          name: true,
+          avatarUrl: true,
+        },
+      },
       public_id: true,
     },
   });
