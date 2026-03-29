@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { useAppDispatch } from "../../../app/hooks";
+import { useNavigate } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import { likePost, unlikePost } from "../postSlice";
 import type { PostResponse } from "../types/post";
 import ThumbsUpIcon from "../../../components/icons/ThumbsUpIcon";
@@ -10,12 +11,20 @@ interface PostCardProps {
 
 export default function PostCard({ post }: PostCardProps) {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const isLoggedIn = useAppSelector((state) => state.login.isLoggedIn);
   const [liked, setLiked] = useState(post.isLiked);
   const [likeCount, setLikeCount] = useState(post._count.likes);
   const [loading, setLoading] = useState(false);
 
   async function handleLike() {
     if (loading) return;
+
+    // Check if user is logged in
+    if (!isLoggedIn) {
+      navigate("/login");
+      return;
+    }
 
     // Optimistic update
     setLiked((prev) => !prev);
