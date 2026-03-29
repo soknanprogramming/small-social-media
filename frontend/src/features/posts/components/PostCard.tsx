@@ -70,26 +70,22 @@ export default function PostCard({ post }: PostCardProps) {
       </div>
 
       {/* Image */}
-      {post.imageUrl ? (
+      {post.imageUrl && (
         <img
           src={post.imageUrl}
           alt={post.title}
           className="w-full h-80 object-cover"
         />
-      ) : (
-        <div className="w-full h-80 bg-gray-50 flex items-center justify-center">
-          <span className="text-gray-300 text-sm tracking-wide uppercase">
-            No image
-          </span>
-        </div>
       )}
 
       {/* Description */}
-      <div className="px-6 pt-4 pb-3 min-w-0">
-        <p className="text-gray-400 text-sm line-clamp-2 leading-relaxed">
-          {post.content ?? "No content available."}
-        </p>
-      </div>
+      {post.content && (
+        <div className="px-6 pt-4 pb-3 min-w-0">
+          <p className="text-gray-400 text-sm line-clamp-2 leading-relaxed">
+            {post.content}
+          </p>
+        </div>
+      )}
 
       {/* Like Count */}
       <div className="px-6 pb-5 flex items-center gap-2">
