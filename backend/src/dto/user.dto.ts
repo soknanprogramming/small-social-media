@@ -6,6 +6,7 @@ export class UserProfileResponseDto {
   avatarUrl: string | null;
   bio: string | null;
   createdAt: Date;
+  updatedAt: Date | null;
 
   constructor(user: {
     id: string;
@@ -14,6 +15,7 @@ export class UserProfileResponseDto {
     avatarUrl: string | null;
     bio: string | null;
     createdAt: Date;
+    updatedAt: Date | null;
   }) {
     this.id = user.id;
     this.email = user.email;
@@ -21,5 +23,6 @@ export class UserProfileResponseDto {
     this.avatarUrl = user.avatarUrl;
     this.bio = user.bio;
     this.createdAt = user.createdAt;
+    this.updatedAt = user.updatedAt;
   }
 }
