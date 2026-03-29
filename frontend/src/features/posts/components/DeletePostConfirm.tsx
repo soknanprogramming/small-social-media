@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import api from '../../../libs/axios'
 import Modal from './Modal'
+import { TrashIcon } from '../../../components/icons/TrashIcon'
 
 interface DeletePostConfirmProps {
   postId: string;
@@ -45,17 +46,8 @@ export default function DeletePostConfirm({ postId, onClose, onPostDeleted }: De
     <Modal onClose={onClose} maxWidth="max-w-sm">
       {/* Icon */}
       <div className="flex justify-center pt-6">
-        <div className="flex items-center justify-center w-12 h-12 rounded-full bg-red-50">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="w-6 h-6 text-red-600"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={1.5}
-            viewBox="0 0 24 24"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 2.991a1.5 1.5 0 0 0-1.34-1.822H7.18a1.5 1.5 0 0 0-1.338 1.822l2.192 12.334m13.074-2.294c.322.048.645.096.967.15M20.522 5.003c-1.635-.069-3.26-.123-4.884-.13V2.25A1.5 1.5 0 0 0 13.5.75h-3a1.5 1.5 0 0 0-1.5 1.5v2.623c-1.624.007-3.249.061-4.884.13" />
-          </svg>
+        <div className="flex items-center justify-center w-12 h-12 rounded-full bg-red-50 text-red-600">
+          <TrashIcon />
         </div>
       </div>
 
