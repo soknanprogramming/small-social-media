@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 import { AuthRequest } from "../types/auth.types";
-import { postSchema } from "../validations/post.validation";
+import { postSchema, updatePostSchema } from "../validations/post.validation";
 import { uploadToCloudinary } from "../utils/uploadToCloudinary";
+// import { deleteFromCloudinary } from "../utils/deleteFromCloudinary";
 import * as postService from "../services/post.service";
 
 export const createPost = async (req: AuthRequest, res: Response) => {
@@ -104,6 +105,67 @@ export const getPostById = async (req: AuthRequest, res: Response) => {
     }
 
     return res.status(200).json(post);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+// Example: PUT /api/posts/:id - Update a post (requires auth and ownership)
+// Request:
+// - Body: { title?, content?, published? }
+// - Optional file upload: photo
+export const updatePost = async (req: AuthRequest, res: Response) => {
+  const { id } = req.params as { id: string };
+  
+  // Validate request body with Zod
+  const validation = updatePostSchema.safeParse(req.body);
+  if (!validation.success) {
+    return res.status(400).json({
+      error: validation.error.issues.map((issue) => issue.message).join(", "),
+    });
+  }
+
+  const { title, content, published } = validation.data;
+
+  try {
+    let imageUrl: string | undefined;
+    let public_id: string | undefined;
+
+    // Handle file upload if provided
+    if (req.file) {
+      const { buffer } = req.file;
+      const folder = "posts";
+      const uploadedImage = await uploadToCloudinary(buffer, folder);
+      imageUrl = uploadedImage.url;
+      public_id = uploadedImage.public_id;
+    }
+
+    // Check if post exists and belongs to user
+    const result = await postService.updatePost(id, req.userId!, {
+      title,
+      content,
+      published,
+      imageUrl,
+      public_id,
+    });
+
+    if (!result) {
+      return res.status(404).json({ error: "Post not found" });
+    }
+
+    if ("unauthorized" in result && result.unauthorized) {
+      return res.status(403).json({
+        error: "You don't have permission to edit this post",
+      });
+    }
+
+    if ("error" in result) {
+      return res.status(500).json(result);
+    }
+
+    const { authorId, public_id: _, ...postWithoutSensitive } = result;
+    return res.status(200).json(postWithoutSensitive);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Internal server error" });

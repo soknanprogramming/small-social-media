@@ -20,3 +20,17 @@ export const postSchema = z.object({
     z.boolean({ message: "Published must be a boolean" })
   ),
 });
+
+export const updatePostSchema = z.object({
+  title: z.string({ message: "Title must be a string" }).min(1, { message: "Title must not be empty" }).optional(),
+  content: z.string({ message: "Content must be a string" }).optional(),
+  published: z.preprocess(
+    (val) => {
+      if (val === undefined || val === null) return undefined;
+      if (typeof val === "boolean") return val;
+      if (typeof val === "string") return val === "true";
+      return undefined;
+    },
+    z.boolean({ message: "Published must be a boolean" }).optional()
+  ),
+});
