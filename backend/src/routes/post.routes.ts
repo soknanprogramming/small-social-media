@@ -11,6 +11,9 @@ router.get("/", postController.getPostsByPage);
 router.get("/:id", optionalAuthMiddleware, postController.getPostById);
 // GET /api/posts/own?page=1&limit=10 - Get user's own posts with pagination
 router.get("/own", authMiddleware, postController.getOwnPostsByPage);
+// GET /api/posts/:id - Get a single post with optional auth (to check if user can view unpublished post)
+router.get("/:id", optionalAuthMiddleware, postController.getPostById);
+// POST /api/posts/ - Create a new post (requires auth and optional image upload)
 router.post("/", authMiddleware, uploadSingle("photo"), postController.createPost);
 
 
