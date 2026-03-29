@@ -82,8 +82,10 @@ const postSlice = createSlice({
         state.ownPostsLoading = false;
         const newPosts = action.payload;
         
-        // Append new posts to existing list (infinite scroll)
-        state.ownPosts = [...state.ownPosts, ...newPosts];
+        // Append new posts to existing list, filtering out duplicates (infinite scroll)
+        const existingIds = new Set(state.ownPosts.map(post => post.id));
+        const uniqueNewPosts = newPosts.filter(post => !existingIds.has(post.id));
+        state.ownPosts = [...state.ownPosts, ...uniqueNewPosts];
         
         // If returned posts < limit, we've reached the end
         const POSTS_PER_PAGE = 10;

@@ -32,9 +32,15 @@ const SpinnerIcon = () => (
 const MyPostPage: React.FC = () => {
   const dispatch = useAppDispatch()
   const [currentPage, setCurrentPage] = useState(1)
+  const [displayPosts, setDisplayPosts] = useState([])
   const observerTarget = useRef<HTMLDivElement>(null)
   
   const { ownPosts, ownPostsLoading, ownPostsError, ownPostsHasMore } = useAppSelector(state => state.posts)
+
+  // Sync displayPosts with Redux ownPosts
+  useEffect(() => {
+    setDisplayPosts(ownPosts)
+  }, [ownPosts])
 
   // Initial load on mount
   useEffect(() => {
@@ -67,6 +73,10 @@ const MyPostPage: React.FC = () => {
     }
   }, [currentPage, dispatch])
 
+  const handlePostDeleted = useCallback((postId: string) => {
+    setDisplayPosts(prev => prev.filter(post => post.id !== postId))
+  }, [])
+
   return (
     <div className="flex-1 min-h-screen bg-gray-50 py-10 px-6">
       <div className="max-w-2xl mx-auto">
@@ -86,7 +96,7 @@ const MyPostPage: React.FC = () => {
         )}
 
         {/* Empty State */}
-        {ownPosts.length === 0 && !ownPostsLoading && !ownPostsError && (
+        {displayPosts.length === 0 && !ownPostsLoading && !ownPostsError && (
           <div className="text-center py-12">
             <p className="text-gray-600 text-sm">You haven't created any posts yet.</p>
             <p className="text-gray-400 text-xs mt-2">Start creating posts to see them here!</p>
@@ -94,10 +104,14 @@ const MyPostPage: React.FC = () => {
         )}
 
         {/* Posts List */}
-        {ownPosts.length > 0 && (
+        {displayPosts.length > 0 && (
           <div className="flex flex-col gap-4">
-            {ownPosts.map((post) => (
-              <MyPostCard key={post.id} post={post} />
+            {displayPosts.map((post) => (
+              <MyPostCard 
+                key={post.id} 
+                post={post}
+                onPostDeleted={handlePostDeleted}
+              />
             ))}
           </div>
         )}
@@ -106,7 +120,7 @@ const MyPostPage: React.FC = () => {
         <div ref={observerTarget} className="pt-8" />
 
         {/* Loading Indicator (shown while fetching more) */}
-        {ownPostsLoading && ownPosts.length > 0 && (
+        {ownPostsLoading && displayPosts.length > 0 && (
           <div className="flex flex-col items-center justify-center py-8 gap-3">
             <SpinnerIcon />
             <p className="text-xs text-gray-400">Loading more posts...</p>
@@ -114,7 +128,7 @@ const MyPostPage: React.FC = () => {
         )}
 
         {/* Initial Loading State */}
-        {ownPostsLoading && ownPosts.length === 0 && (
+        {ownPostsLoading && displayPosts.length === 0 && (
           <div className="flex flex-col items-center justify-center py-12 gap-3">
             <SpinnerIcon />
             <p className="text-sm text-gray-500">Loading your posts...</p>
@@ -122,7 +136,7 @@ const MyPostPage: React.FC = () => {
         )}
 
         {/* End of Posts Message */}
-        {!ownPostsLoading && ownPosts.length > 0 && !ownPostsHasMore && (
+        {!ownPostsLoading && displayPosts.length > 0 && !ownPostsHasMore && (
           <div className="text-center py-8">
             <p className="text-xs text-gray-400">You've reached the end of your posts</p>
           </div>

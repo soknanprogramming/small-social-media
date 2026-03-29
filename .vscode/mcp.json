@@ -1,11 +1,11 @@
-
 {
     "servers": {
         "postman": {
             "type": "http",
             "url": "https://mcp.postman.com/minimal"
-                // "https://mcp.postman.com/code" for Code mode
-                // "https://mcp.postman.com/mcp" for Full mode
+        },
+        "chrome-devtools": {
+            "command": "chrome-devtools-mcp"
         }
     }
 }
