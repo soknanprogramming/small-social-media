@@ -67,3 +67,22 @@ export const getPostsByPage = async (req: Request, res: Response) => {
     return res.status(500).json({ error: "Internal server error" });
   }
 };
+
+// Example: GET /api/posts/own?page=1&limit=10
+export const getOwnPostsByPage = async (req: AuthRequest, res: Response) => {
+  const page = parseInt(req.query.page as string) || 1;
+  const limit = parseInt(req.query.limit as string) || 10;
+
+  try {
+    const posts = await postService.getOwnPostsByPage(
+      req.userId!,
+      page,
+      limit,
+    );
+    return res.status(200).json(posts);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+

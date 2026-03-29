@@ -42,3 +42,34 @@ export const getPostsByPage = async (page: number, limit: number) => {
     },
   });
 };
+
+export const getOwnPostsByPage = async (
+  userId: string,
+  page: number,
+  limit: number,
+) => {
+  const offset = (page - 1) * limit;
+  return prisma.post.findMany({
+    skip: offset,
+    take: limit,
+    where: {
+      authorId: userId,
+    },
+    select: {
+      id: true,
+      title: true,
+      content: true,
+      imageUrl: true,
+      published: true,
+      createdAt: true,
+      _count: {
+        select: {
+          likes: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+};
