@@ -73,3 +73,43 @@ export const getOwnPostsByPage = async (
     },
   });
 };
+
+export const getPostById = async (
+  postId: string,
+  userId?: string,
+) => {
+  const post = await prisma.post.findUnique({
+    where: {
+      id: postId,
+    },
+    select: {
+      id: true,
+      title: true,
+      content: true,
+      imageUrl: true,
+      published: true,
+      createdAt: true,
+      authorId: true,
+      _count: {
+        select: {
+          likes: true,
+        },
+      },
+    },
+  });
+
+  if (!post) {
+    return null;
+  }
+
+  // Check authorization for unpublished posts
+  if (!post.published) {
+    if (!userId || userId !== post.authorId) {
+      return { unauthorized: true };
+    }
+  }
+
+  // Remove authorId from response
+  const { authorId, ...postData } = post;
+  return postData;
+};

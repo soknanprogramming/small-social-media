@@ -86,3 +86,27 @@ export const getOwnPostsByPage = async (req: AuthRequest, res: Response) => {
   }
 };
 
+// Example: GET /api/posts/:id - Get a single post with authorization check
+export const getPostById = async (req: AuthRequest, res: Response) => {
+  const { id } = req.params as { id: string };
+  
+  try {
+    const post = await postService.getPostById(id, req.userId);
+    
+    if (!post) {
+      return res.status(404).json({ error: "Post not found" });
+    }
+
+    if ("unauthorized" in post && post.unauthorized) {
+      return res.status(403).json({ 
+        error: "You don't have permission to view this post" 
+      });
+    }
+
+    return res.status(200).json(post);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
