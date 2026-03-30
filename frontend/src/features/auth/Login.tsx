@@ -4,10 +4,7 @@ import { LockIcon } from "../../components/icons/LockIcon";
 import { EyeIcon } from "../../components/icons/EyeIcon";
 import { LoginIcon } from "../../components/icons/LoginIcon";
 import { RegisterIcon } from "../../components/icons/RegisterIcon";
-import { Link, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
-import { useAppSelector } from "../../app/hooks";
-import { type RootState } from "../../app/store";
+import { Link } from "react-router-dom";
 
 const Login: React.FC = () => {
   const {
@@ -19,11 +16,6 @@ const Login: React.FC = () => {
     handleSubmit,
     togglePassword,
   } = useLogin();
-
-  // const isLoggedIn = useAppSelector((state: RootState) => state.login.isLoggedIn);
-  // const navigate = useNavigate();
-
-  // Only redirect if user lands on /login while already authenticated
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50">
