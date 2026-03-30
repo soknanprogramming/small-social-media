@@ -5,6 +5,8 @@ const initialState: ProfileResponse = {
     id: "",
     email: "",
     name: null,
+    bio: null,
+    avatarUrl: null,
     createdAt: null,
     updatedAt: null
 };
