@@ -1,4 +1,3 @@
-import React from 'react'
 import type { PostResponse } from '../types/post'
 import Modal from './Modal'
 

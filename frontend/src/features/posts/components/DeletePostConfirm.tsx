@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import api from '../../../libs/axios'
 import Modal from './Modal'
 import { TrashIcon } from '../../../components/icons/TrashIcon'
