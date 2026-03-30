@@ -1,0 +1,70 @@
+# Multi-stage production Dockerfile for Node.js backend
+# Stage 1: Builder
+FROM node:22-alpine AS builder
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+COPY tsconfig.json ./
+COPY prisma ./prisma
+
+# Install dependencies (including dev dependencies for build)
+RUN npm ci
+
+# Copy source code
+COPY src ./src
+
+# Generate Prisma client
+RUN npm run prisma:generate
+
+# Build TypeScript
+RUN npm run build
+
+# Stage 2: Production runtime
+FROM node:22-alpine
+
+WORKDIR /app
+
+# Install dumb-init to properly handle signals
+RUN apk add --no-cache dumb-init
+
+# Create a non-root user for security
+RUN addgroup -g 1001 -S nodejs && adduser -S nodejs -u 1001
+
+# Copy package files
+COPY package*.json ./
+
+# Install only production dependencies
+RUN npm ci --only=production && npm cache clean --force
+
+# Copy Prisma schema and migrations
+# Use --chown to set correct permissions for the non-root user
+# Copy from the builder stage to ensure we have the generated Prisma client
+COPY --chown=nodejs:nodejs prisma ./prisma
+
+# Copy compiled application from builder
+# nodejs --chown=<user>:<group>
+# Use --chown to set correct permissions for the non-root user
+COPY --from=builder --chown=nodejs:nodejs /app/dist ./dist
+
+# Add this line — copies the generated Prisma client
+COPY --from=builder --chown=nodejs:nodejs /app/node_modules/.prisma ./node_modules/.prisma
+
+# Switch to non-root user
+USER nodejs
+
+# Expose port
+EXPOSE 3000
+
+# Health check
+# This health check will periodically check the /health endpoint of the application to ensure it's running properly.
+HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
+    CMD node -e "require('http').get('http://localhost:3000/health', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})"
+
+# Use dumb-init to handle signals properly
+# This ensures that the application can shut down gracefully when receiving termination signals.
+ENTRYPOINT ["dumb-init", "--"]
+
+# Start the application
+CMD ["node", "dist/server.js"]

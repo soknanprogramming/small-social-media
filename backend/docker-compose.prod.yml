@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    container_name: social_media_backend_prod
+    restart: no
+    environment:
+      PORT: ${PORT:-3000}
+      FRONTEND_URL: ${FRONTEND_URL}
+      NODE_ENV: production
+      DATABASE_URL: ${DATABASE_URL}
+      JWT_SECRET: ${JWT_SECRET:-your-secret-key-change-in-production}
+      CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME}
+      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY}
+      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET}
+    ports:
+      - "${PORT:-3000}:3000"
+    volumes:
+      - ./logs:/app/logs
+    networks:
+      - social_media_network
+    logging:
+      driver: "json-file" # Use json-file logging driver for better performance in production
+      options:
+        max-size: "10m" # Limit log file size to 10MB
+        max-file: "3" # Keep a maximum of 3 log files
+    healthcheck:
+      # Use a simple HTTP request to check if the server is responding
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/health', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})"]
+      interval: 30s # Check every 30 seconds
+      timeout: 10s # Wait up to 10 seconds for the health check to respond
+      retries: 3 # Retry up to 3 times before marking the container as unhealthy
+      start_period: 40s # Wait 40 seconds before starting health checks to allow the server to fully start
+
+networks:
+  social_media_network:
+    driver: bridge # Use bridge network for better isolation and performance in production
