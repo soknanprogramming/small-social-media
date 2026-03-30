@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import type { PostResponse } from '../types/post'
 import { MenuIcon } from '../../../components/icons/MenuIcon'
 import { EyeIcon } from '../../../components/icons/EyeIcon'

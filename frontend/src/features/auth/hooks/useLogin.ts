@@ -26,7 +26,12 @@ export const useLogin = () => {
     setApiError("");
 
     try {
-      await axios.post<LoginResponse>("/api/users/login", formData);
+      const response = await axios.post<LoginResponse>("/api/users/login", formData);
+      // Store the token in localStorage for authentication
+      if (response.data.token) {
+        console.log("Received token:", response.data.token); // Debug log
+        localStorage.setItem("token", response.data.token);
+      }
       dispatch(setLoggedIn(true));
       navigate("/");
     } catch (err: any) {

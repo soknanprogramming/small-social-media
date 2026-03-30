@@ -1,30 +1,31 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react'
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
 import { fetchOwnPosts, resetOwnPosts } from './postSlice'
+import type { PostResponse } from './types/post'
 import MyPostCard from './components/MyPostCard'
 
 const POSTS_PER_PAGE = 10
 
 // Spinner Icon Component
 const SpinnerIcon = () => (
-  <svg 
-    className="w-5 h-5 animate-spin" 
-    xmlns="http://www.w3.org/2000/svg" 
-    fill="none" 
+  <svg
+    className="w-5 h-5 animate-spin"
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
     viewBox="0 0 24 24"
   >
-    <circle 
-      className="opacity-25" 
-      cx="12" 
-      cy="12" 
-      r="10" 
-      stroke="currentColor" 
-      strokeWidth="4" 
+    <circle
+      className="opacity-25"
+      cx="12"
+      cy="12"
+      r="10"
+      stroke="currentColor"
+      strokeWidth="4"
     />
-    <path 
-      className="opacity-75" 
-      fill="currentColor" 
-      d="M4 12a8 8 0 018-8v8H4z" 
+    <path
+      className="opacity-75"
+      fill="currentColor"
+      d="M4 12a8 8 0 018-8v8H4z"
     />
   </svg>
 )
@@ -32,9 +33,9 @@ const SpinnerIcon = () => (
 const MyPostPage: React.FC = () => {
   const dispatch = useAppDispatch()
   const [currentPage, setCurrentPage] = useState(1)
-  const [displayPosts, setDisplayPosts] = useState([])
+  const [displayPosts, setDisplayPosts] = useState<PostResponse[]>([])
   const observerTarget = useRef<HTMLDivElement>(null)
-  
+
   const { ownPosts, ownPostsLoading, ownPostsError, ownPostsHasMore } = useAppSelector(state => state.posts)
 
   // Sync displayPosts with Redux ownPosts
